@@ -1,0 +1,15 @@
+<!-- templates/doctor_list.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Doctors List</h1>
+<ol>
+  {% for doctor in doctors %}
+  <li>
+    <a href="{% url 'doctor_detail' pk=doctor.pk slug=doctor.slug %}">
+      {{ doctor.user.last_name }}, {{ doctor.user.first_name }}
+    </a>
+  </li>
+  {% endfor %}
+</ol>
+{% endblock %}

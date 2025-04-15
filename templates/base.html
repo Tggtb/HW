@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block title %}<title>P2321148 CMS clinic</title>{% endblock %}
+</head>
+<body>
+    {% block sidebar %}
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'doctor_list' %}">Doctor’s Page</a></li>
+        <li><a href="{% url 'patient_list' %}">Patient’s Page</a></li>
+    </ul>
+    {% endblock %}
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!-- templates/available_appointments_list.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="available-appointments">
+    <h1>Available Appointments List</h1>
+    
+    {% if appointments %}
+        <ul>
+            {% for appt in appointments %}
+                <li>
+                    <strong>Doctor:</strong> 
+                    {{ appt.doctor.user.last_name }}, {{ appt.doctor.user.first_name }}<br>
+                    <strong>Date:</strong> {{ appt.date }}<br>
+                    <strong>Time:</strong> {{ appt.time }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No available appointments found.</p>
+    {% endif %}
+</div>
+{% endblock %}

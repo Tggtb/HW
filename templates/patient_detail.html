@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Patient Details: </h1>
+<table class="info-table">
+    <tr>
+        <th>Username:</th>
+        <td>{{ object.user.username }}</td>
+    </tr>
+    <tr>
+        <th>First Name:</th>
+        <td>{{ object.user.first_name}}</td>
+    </tr>
+    <tr>
+        <th>Last Name:</th>
+        <td>{{ object.user.last_name}}</td>
+    </tr>
+</table>
+{% if appointments %}
+  <h2>Appointments:</h2>
+  <ul>
+    {% for appt in appointments %}
+    <li>{{ appt.date }} {{ appt.time }} with Dr. {{ appt.doctor.user.last_name }}</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No appointments yet.</p>
+{% endif %}
+{% endblock %}
