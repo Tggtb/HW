@@ -4,11 +4,26 @@
     {% block title %}<title>P2321148 CMS clinic</title>{% endblock %}
 </head>
 <body>
+    <div class="user-info">
+        {% if user.is_authenticated %}
+            Welcome, {{ user.get_full_name|default:user.username }}!
+            <a href="{% url 'logout' %}">Logout</a>
+            {% if user.doctor %}
+                <a href="{% url 'new_appointment' %}">Add Appointment</a>
+            {% endif %}
+            <a href="{% url 'my_appointments' %}">My Appointments</a>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+    </div>
+
     {% block sidebar %}
     <ul class="sidebar-nav">
         <li><a href="{% url 'home' %}">Home</a></li>
-        <li><a href="{% url 'doctor_list' %}">Doctor’s Page</a></li>
-        <li><a href="{% url 'patient_list' %}">Patient’s Page</a></li>
+        <li><a href="{% url 'doctor_list' %}">Doctor's Page</a></li>
+        {% if user.is_authenticated and user.doctor %}
+            <li><a href="{% url 'patient_list' %}">Patient's Page</a></li>
+        {% endif %}
     </ul>
     {% endblock %}
     {% block content %}

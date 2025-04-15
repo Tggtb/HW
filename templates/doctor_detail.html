@@ -1,26 +1,36 @@
 <!-- templates/doctor_detail.html -->
 {% extends 'base.html' %}
-{% block content %}
-<h1>Doctor Details: </h1>
-<table class="info-table">
-        <tr>
-            <th>Username:</th>
-            <td>{{ object.user.username }}</td>
-        </tr>
-        <tr>
-            <th>First Name:</th>
-            <td>{{ object.user.first_name}}</td>
-        </tr>
-        <tr>
-            <th>Last Name:</th>
-            <td>{{ object.user.last_name}}</td>
-        </tr>
-</table>
 
-<h2>Appointments:</h2>
-<ul>
-  {% for appt in appointments %}
-  <li>{{ appt.date }} {{ appt.time }} - {{ appt.get_status_display }}</li>
-  {% endfor %}
-</ul>
+{% block content %}
+<h1>{{ doctor }}</h1>
+
+<h2>Available Appointments</h2>
+{% if appointments %}
+    {% if is_patient %}
+        <form method="post">
+            {% csrf_token %}
+            {% for appointment in appointments %}
+                <div>
+                    <input type="radio" name="appointment" value="{{ appointment.appointID }}" id="appointment_{{ appointment.appointID }}">
+                    <label for="appointment_{{ appointment.appointID }}">
+                        Date: {{ appointment.date }}<br>
+                        Time: {{ appointment.time }}
+                    </label>
+                </div>
+            {% endfor %}
+            <button type="submit">Book Appointment</button>
+        </form>
+    {% else %}
+        <ul>
+        {% for appointment in appointments %}
+            <li>
+                Date: {{ appointment.date }}<br>
+                Time: {{ appointment.time }}
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% else %}
+    <p>No available appointments at the moment.</p>
+{% endif %}
 {% endblock %}
