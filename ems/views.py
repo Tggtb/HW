@@ -1,5 +1,5 @@
-from django.shortcuts import render, get_object_or_404
-from django.http import Http404, HttpResponseNotFound
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import Http404, HttpResponseNotFound, HttpResponseForbidden
 from django.urls import reverse
 from django.views.generic import ListView, TemplateView, DetailView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -46,6 +46,9 @@ class DoctorDetailView(DetailView):
         return context
 
     def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+            
         if not hasattr(request.user, 'patient'):
             return HttpResponseForbidden("Only patients can book appointments.")
         
@@ -58,17 +61,25 @@ class DoctorDetailView(DetailView):
             return redirect('my_appointments')
         return redirect('doctor_detail', pk=kwargs['pk'], slug=kwargs['slug'])
 
-class PatientListView(ListView):
+class PatientListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Patient
     template_name = 'patient_list.html'
     context_object_name = 'patients'
+    login_url = '/accounts/login/'
+
+    def test_func(self):
+        return hasattr(self.request.user, 'doctor')
 
     def get_queryset(self):
         return Patient.objects.order_by('user__last_name', 'user__first_name')
 
-class PatientDetailView(DetailView):
+class PatientDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Patient
     template_name = 'patient_detail.html'
+    login_url = '/accounts/login/'
+
+    def test_func(self):
+        return hasattr(self.request.user, 'doctor')
 
     def get(self, request, *args, **kwargs):
         try:
@@ -96,6 +107,7 @@ class NewAppointmentView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = 'new_appointment.html'
     fields = ['date', 'time']
     success_url = reverse_lazy('home')
+    login_url = '/accounts/login/'
 
     def test_func(self):
         return hasattr(self.request.user, 'doctor')
@@ -105,7 +117,7 @@ class NewAppointmentView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         form.instance.status = 'a'
         return super().form_valid(form)
 
-@login_required
+@login_required(login_url='/accounts/login/')
 def my_appointments(request):
     if hasattr(request.user, 'doctor'):
         appointments = Appointment.objects.filter(doctor=request.user.doctor, status='t')

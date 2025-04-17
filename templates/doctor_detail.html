@@ -6,20 +6,31 @@
 
 <h2>Available Appointments</h2>
 {% if appointments %}
-    {% if is_patient %}
-        <form method="post">
-            {% csrf_token %}
+    {% if user.is_authenticated %}
+        {% if is_patient %}
+            <form method="post">
+                {% csrf_token %}
+                {% for appointment in appointments %}
+                    <div>
+                        <input type="radio" name="appointment" value="{{ appointment.appointID }}" id="appointment_{{ appointment.appointID }}">
+                        <label for="appointment_{{ appointment.appointID }}">
+                            Date: {{ appointment.date }}<br>
+                            Time: {{ appointment.time }}
+                        </label>
+                    </div>
+                {% endfor %}
+                <button type="submit">Book Appointment</button>
+            </form>
+        {% else %}
+            <ul>
             {% for appointment in appointments %}
-                <div>
-                    <input type="radio" name="appointment" value="{{ appointment.appointID }}" id="appointment_{{ appointment.appointID }}">
-                    <label for="appointment_{{ appointment.appointID }}">
-                        Date: {{ appointment.date }}<br>
-                        Time: {{ appointment.time }}
-                    </label>
-                </div>
+                <li>
+                    Date: {{ appointment.date }}<br>
+                    Time: {{ appointment.time }}
+                </li>
             {% endfor %}
-            <button type="submit">Book Appointment</button>
-        </form>
+            </ul>
+        {% endif %}
     {% else %}
         <ul>
         {% for appointment in appointments %}
@@ -29,6 +40,7 @@
             </li>
         {% endfor %}
         </ul>
+        <p>Please <a href="{% url 'login' %}">login</a> as a patient to book an appointment.</p>
     {% endif %}
 {% else %}
     <p>No available appointments at the moment.</p>
